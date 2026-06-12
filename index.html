@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Arbitre de Kickball — simulateur d'entraînement</title>
+<meta name="description" content="Simulateur d'entraînement pour arbitres de kickball au primaire, basé sur le règlement de Sports Laval.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --vert: #1d6f4e;
+  --vert-fonce: #14503a;
+  --vert-pale: #e7f2ec;
+  --rouge: #d0421b;
+  --rouge-fonce: #8f2c10;
+  --rouge-pale: #fbe9e3;
+  --ocre: #c99a3c;
+  --ocre-pale: #f7efdd;
+  --encre: #21261f;
+  --gris: #5f655c;
+  --fond: #f4f4ef;
+  --carte: #ffffff;
+  --bord: #d8dcd3;
+  --rayon: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Public Sans", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--encre);
+  background: var(--fond);
+  min-height: 100vh;
+}
+.bandeau {
+  background: var(--vert-fonce);
+  color: #fdfcf8;
+  padding: 18px 16px 16px;
+  border-bottom: 4px solid var(--rouge);
+}
+.bandeau-int {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ballon {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--rouge);
+  border: 3px solid #fdfcf8;
+  flex-shrink: 0;
+}
+h1 {
+  font-family: "Archivo Black", "Public Sans", sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.sous-titre { font-size: 13px; opacity: 0.85; }
+main { max-width: 760px; margin: 0 auto; padding: 20px 16px 60px; }
+
+/* Navigation entre vues */
+.nav-retour {
+  background: none;
+  border: none;
+  color: var(--vert);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 14px;
+}
+.nav-retour:hover { text-decoration: underline; }
+
+/* Cartes génériques */
+.carte {
+  background: var(--carte);
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+h2 {
+  font-family: "Archivo Black", "Public Sans", sans-serif;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 10px;
+  color: var(--vert-fonce);
+}
+h3 { font-size: 16px; margin-bottom: 6px; }
+p + p { margin-top: 8px; }
+.discret { color: var(--gris); font-size: 14px; }
+
+/* Accueil : choix de mode */
+.choix-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+@media (max-width: 560px) { .choix-mode { grid-template-columns: 1fr; } }
+.bouton-mode {
+  background: var(--carte);
+  border: 2px solid var(--vert);
+  border-radius: var(--rayon);
+  padding: 18px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s;
+}
+.bouton-mode:hover, .bouton-mode:focus-visible { background: var(--vert-pale); }
+.bouton-mode .titre-mode {
+  font-family: "Archivo Black", "Public Sans", sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: var(--vert-fonce);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Liste de catégories (quiz) */
+.liste-cat { display: flex; flex-direction: column; gap: 10px; }
+.bouton-cat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: var(--carte);
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 14px 16px;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.bouton-cat:hover, .bouton-cat:focus-visible { border-color: var(--vert); }
+.bouton-cat .nom-cat { font-weight: 600; }
+.bouton-cat .ref-cat { font-size: 13px; color: var(--gris); }
+.jauge {
+  min-width: 110px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--gris);
+}
+.jauge-barre {
+  height: 6px;
+  background: var(--bord);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.jauge-rempli { height: 100%; background: var(--vert); border-radius: 3px; }
+
+/* Tableau de bord de la partie */
+.tableau {
+  background: var(--vert-fonce);
+  color: #fdfcf8;
+  border-radius: var(--rayon);
+  padding: 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  align-items: baseline;
+  margin-bottom: 14px;
+  font-family: "Archivo Black", "Public Sans", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tableau .bloc { display: flex; flex-direction: column; }
+.tableau .etiquette { font-size: 10px; opacity: 0.75; font-family: "Public Sans", sans-serif; font-weight: 600; }
+.tableau .valeur { font-size: 20px; }
+.tableau .retraits-pts { display: flex; gap: 5px; align-items: center; padding-top: 6px; }
+.point-retrait {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fdfcf8;
+  background: transparent;
+}
+.point-retrait.actif { background: var(--rouge); border-color: var(--rouge); }
+
+/* Terrain SVG */
+.terrain { margin: 0 auto 14px; max-width: 480px; }
+.terrain svg { width: 100%; height: auto; display: block; }
+
+/* Carte de situation */
+.situation { border-left: 4px solid var(--ocre); background: var(--ocre-pale); border-radius: 0 var(--rayon) var(--rayon) 0; }
+.situation .ref { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--rouge-fonce); font-weight: 600; margin-bottom: 6px; }
+
+/* Options de réponse */
+.options { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.bouton-option {
+  background: var(--carte);
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 12px 16px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.bouton-option:hover:not(:disabled), .bouton-option:focus-visible { border-color: var(--vert); background: var(--vert-pale); }
+.bouton-option:disabled { cursor: default; }
+.bouton-option.correcte { border-color: var(--vert); background: var(--vert-pale); font-weight: 600; }
+.bouton-option.fautive { border-color: var(--rouge); background: var(--rouge-pale); }
+
+/* Verdict et explication */
+.verdict { margin-top: 14px; }
+.verdict .entete-verdict {
+  font-family: "Archivo Black", "Public Sans", sans-serif;
+  text-transform: uppercase;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.verdict.bon .entete-verdict { color: var(--vert); }
+.verdict.mauvais .entete-verdict { color: var(--rouge); }
+.bouton-suite {
+  margin-top: 14px;
+  background: var(--vert);
+  color: #fdfcf8;
+  border: none;
+  border-radius: var(--rayon);
+  padding: 12px 22px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.bouton-suite:hover, .bouton-suite:focus-visible { background: var(--vert-fonce); }
+.bouton-secondaire {
+  margin-top: 14px;
+  background: none;
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 11px 20px;
+  font: inherit;
+  cursor: pointer;
+  color: var(--encre);
+}
+.bouton-secondaire:hover { border-color: var(--gris); }
+
+/* Statistiques */
+.ligne-stat { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--bord); }
+.ligne-stat:last-child { border-bottom: none; }
+.pourcentage { font-family: "Archivo Black", "Public Sans", sans-serif; font-size: 16px; min-width: 56px; text-align: right; }
+.pourcentage.fort { color: var(--vert); }
+.pourcentage.faible { color: var(--rouge); }
+
+.masque { display: none !important; }
+:focus-visible { outline: 3px solid var(--ocre); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="bandeau">
+  <div class="bandeau-int">
+    <div class="ballon" aria-hidden="true"></div>
+    <div>
+      <h1>L'Arbitre de Kickball</h1>
+      <div class="sous-titre">Simulateur d'entraînement — règlement Sports Laval (primaire)</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ====== VUE ACCUEIL ====== -->
+  <section id="vue-accueil">
+    <div class="choix-mode">
+      <button class="bouton-mode" onclick="Moteur.allerQuiz()">
+        <span class="titre-mode">Quiz règle par règle</span>
+        <span class="discret">Échauffement : maîtrisez chaque article du règlement, catégorie par catégorie.</span>
+      </button>
+      <button class="bouton-mode" onclick="Moteur.lancerPartie()">
+        <span class="titre-mode">Partie simulée</span>
+        <span class="discret">Arbitrez une partie complète : les situations s'enchaînent et l'état du jeu évolue selon vos décisions.</span>
+      </button>
+    </div>
+    <div class="carte" id="stats-accueil"></div>
+    <div class="carte">
+      <h2>Comment ça fonctionne</h2>
+      <p>Chaque situation correctement jugée est considérée comme <strong>maîtrisée</strong> et ne vous sera plus proposée. Une situation mal jugée revient tant qu'elle n'est pas réussie. Votre progression est conservée dans ce navigateur.</p>
+      <p class="discret">Référence : <a href="https://sportslaval.qc.ca/wp-content/uploads/2021/07/R%C3%A8glement-Kickball.pdf" target="_blank" rel="noopener">Règlement Kickball — Sports Laval (PDF)</a>. Les zones grises du règlement sont signalées comme « jugement d'arbitre ».</p>
+    </div>
+  </section>
+
+  <!-- ====== VUE QUIZ : CHOIX DE CATÉGORIE ====== -->
+  <section id="vue-quiz-cat" class="masque">
+    <button class="nav-retour" onclick="Moteur.allerAccueil()">&larr; Retour à l'accueil</button>
+    <h2>Choisissez une catégorie</h2>
+    <div class="liste-cat" id="liste-categories"></div>
+  </section>
+
+  <!-- ====== VUE QUESTION (quiz et partie) ====== -->
+  <section id="vue-question" class="masque">
+    <button class="nav-retour" id="bouton-quitter" onclick="Moteur.quitterQuestion()">&larr; Quitter</button>
+    <div id="zone-tableau"></div>
+    <div class="terrain" id="zone-terrain"></div>
+    <div class="carte situation">
+      <div class="ref" id="question-ref"></div>
+      <p id="question-texte"></p>
+      <div class="options" id="question-options"></div>
+      <div id="question-verdict"></div>
+    </div>
+  </section>
+
+  <!-- ====== VUE FIN (de catégorie ou de partie) ====== -->
+  <section id="vue-fin" class="masque">
+    <div class="carte" id="fin-contenu"></div>
+  </section>
+
+</main>
+
+<script src="scenarios.js"></script>
+<script src="moteur.js"></script>
+</body>
+</html>
