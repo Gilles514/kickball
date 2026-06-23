@@ -508,5 +508,44 @@ const SCENARIOS = [
     ],
     bonne: 1,
     explication: "Aucun règlement ne couvre ça, mais c'est la compétence d'arbitre la plus utile en fête d'école : décider vite, expliquer brièvement (« le ballon est arrivé avant toi, c'est un retrait, beau sprint quand même ! ») et relancer le jeu. Un jeu qui repart vite éteint 90 % des contestations d'enfants."
+  },
+
+  /* ---------- LE RETOUR AU BUT (TAG-UP) ---------- */
+  {
+    id: "C8", cat: "course", modes: ["quiz", "partie"],
+    situation: "Un coureur est au 2e but. Le botteur envoie un ballon haut vers le champ ; le voltigeur de centre l'attrape au vol. Sans attendre, le coureur du 2e était déjà parti vers le 3e dès le contact du botté ; il atteint le 3e but. La défensive relaie le ballon au 2e but (que le coureur a quitté) et le touche avec le ballon.",
+    options: [
+      "Le coureur est sauf au 3e but : il y est arrivé.",
+      "Le coureur est retiré : sur une attrapée au vol, il doit d'abord retoucher son but de départ avant de pouvoir avancer.",
+      "Le jeu est annulé et le coureur revient au 2e but sans pénalité."
+    ],
+    bonne: 1,
+    explication: "Règle de l'attrapé au vol (tag-up) : sur un ballon capté de volée, un coureur déjà engagé doit revenir toucher son but de départ APRÈS la capture avant de filer. Comme il était parti trop tôt et n'a pas retouché le 2e, la défensive le retire en touchant ce but (retrait forcé sur tag-up manqué). Sports Laval ne nomme pas cette règle ; le document des cadets canadiens la formule clairement, et elle s'adapte bien au primaire si vous l'annoncez d'avance.",
+    pre: "coureurAuMoinsUn", effet: { type: "retraitCoureurTete" }
+  },
+  {
+    id: "C9", cat: "course", modes: ["quiz", "partie"],
+    situation: "Coureur au 2e but. Le botteur frappe un ballon haut, attrapé au vol par l'arrêt-court. Cette fois, le coureur reste sur le 2e but, attend la capture, retouche le coussin, PUIS s'élance vers le 3e qu'il atteint avant le relais.",
+    options: [
+      "Le coureur est retiré : on ne peut pas avancer sur une attrapée.",
+      "Le coureur est sauf au 3e but : il a correctement retouché son but après la capture avant d'avancer.",
+      "Le botteur ET le coureur sont retirés."
+    ],
+    bonne: 1,
+    explication: "C'est le tag-up exécuté correctement. Le botteur est bien retiré (ballon attrapé au vol), mais le coureur a le droit d'avancer à ses risques une fois qu'il a retouché son but après la capture. Avancer ainsi s'appelle « avancer sur le ballon attrapé » : parfaitement légal.",
+    pre: "coureurAuMoinsUn", effet: { type: "coureurTeteAvance" }
+  },
+
+  /* ---------- CONTRASTE ENTRE RÈGLEMENTS ---------- */
+  {
+    id: "J6", cat: "jugement", modes: ["quiz"],
+    situation: "ZONE GRISE — Un parent qui a déjà arbitré au kickball adulte vous reproche, devant les élèves, de ne pas accorder le retrait quand un défenseur atteint un coureur en lui lançant le ballon dessus. « Partout ailleurs, ça compte ! » Que répondez-vous ?",
+    options: [
+      "Il a raison, vous changez votre décision pour le reste de la partie.",
+      "Vous maintenez : au primaire (règlement Sports Laval), on ne lance jamais le ballon sur un coureur. C'est une adaptation de sécurité propre aux jeunes, même si le kickball adulte (WAKA, cadets) l'autorise sous la taille.",
+      "Vous arrêtez la partie en attendant l'avis de la direction."
+    ],
+    bonne: 1,
+    explication: "Le parent n'a pas tort... pour le kickball adulte : WAKA et le règlement des cadets canadiens autorisent bel et bien de retirer un coureur en l'atteignant d'un ballon lancé sous la taille. Mais le règlement de Sports Laval, conçu pour le primaire, l'interdit expressément — précisément pour protéger les enfants. Connaître les deux versions vous permet de tenir votre décision avec assurance : ce n'est pas une erreur, c'est une règle adaptée à l'âge des joueurs.",
   }
 ];
