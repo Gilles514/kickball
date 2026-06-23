@@ -25,7 +25,7 @@ dans le `localStorage` du navigateur (bouton de réinitialisation fourni).
 | Fichier        | Rôle |
 |----------------|------|
 | `index.html`   | Structure de la page et styles (aucune logique) |
-| `scenarios.js` | **Données** : la banque de 42 situations, leurs verdicts et explications |
+| `scenarios.js` | **Données** : la banque de 45 situations, leurs verdicts et explications |
 | `moteur.js`    | **Logique** : navigation, maîtrise, statistiques, état de partie, rendu SVG |
 | `test.js`      | Test automatisé (facultatif, voir plus bas) |
 
